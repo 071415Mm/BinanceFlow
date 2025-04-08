@@ -1,0 +1,20 @@
+{
+  "name": "flowtrack-crypto",
+  "version": "1.0.0",
+  "description": "这是一个专业的加密货币资金流向分析工具，采用前后端分离的架构设计，主要通过分析Binance交易所的现货和期货市场数据，提供深度的市场洞察和交易策略建议。该工具结合K线数据、订单簿深度和DeepSeek AI模型，为交易者提供全面的市场分析。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/071415Mm/BinanceFlow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/071415Mm/BinanceFlow/issues"
+  },
+  "homepage": "https://github.com/071415Mm/BinanceFlow#readme"
+}
