@@ -1,0 +1,213 @@
+/* 
+ * 币安资金流向分析系统 - 主样式文件
+ */
+
+:root {
+    --primary-color: #4da6ff;
+    --secondary-color: #2e6da4;
+    --background-dark: #0e1117;
+    --background-medium: #171c2e;
+    --background-light: #1a1f36;
+    --border-color: #2c3454;
+    --text-light: #d1d1d1;
+    --text-primary: #4da6ff;
+    --text-error: #ff4b4b;
+}
+
+body {
+    background-color: var(--background-dark);
+    color: var(--text-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    background-color: var(--background-medium);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand {
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.sidebar {
+    background-color: var(--background-medium);
+    border-right: 1px solid var(--border-color);
+    height: calc(100vh - 56px);
+    padding: 20px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    transform: translateY(-1px);
+}
+
+/* 卡片样式 */
+.card {
+    background-color: var(--background-light);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* 表单样式 */
+.form-control {
+    background-color: var(--background-medium);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.form-control:focus {
+    background-color: var(--background-medium);
+    color: var(--text-light);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(77, 166, 255, 0.25);
+}
+
+/* 标签样式 */
+.symbol-tag {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    margin: 0.2rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* 分析结果容器 */
+.analysis-container {
+    background-color: var(--background-light);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+th, td {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--background-medium);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+tr:nth-child(even) {
+    background-color: var(--background-medium);
+}
+
+/* 加载指示器 */
+.loading-spinner {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+}
+
+.loading-spinner:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid var(--primary-color);
+    border-color: var(--primary-color) transparent var(--primary-color) transparent;
+    animation: loading-spinner 1.2s linear infinite;
+}
+
+@keyframes loading-spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Markdown 渲染区域 */
+.markdown-content {
+    padding: 10px;
+}
+
+.markdown-content h1, 
+.markdown-content h2, 
+.markdown-content h3, 
+.markdown-content h4, 
+.markdown-content h5, 
+.markdown-content h6 {
+    color: var(--primary-color);
+}
+
+.markdown-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.markdown-content th,
+.markdown-content td {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.markdown-content pre {
+    background-color: var(--background-medium);
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.markdown-content code {
+    background-color: var(--background-medium);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    color: var(--primary-color);
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding-left: 1rem;
+    margin-left: 0;
+    color: var(--text-light);
+} 
