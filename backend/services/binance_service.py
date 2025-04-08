@@ -7,6 +7,7 @@ import requests
 import logging
 from datetime import datetime
 import os
+from urllib.parse import quote_plus
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -18,6 +19,51 @@ BINANCE_FUTURES_API_URL = "https://fapi.binance.com"
 BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
 BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
 
+# 代理设置
+USE_PROXY = os.getenv("USE_PROXY", "False").lower() == "true"
+HTTP_PROXY = os.getenv("HTTP_PROXY")
+HTTPS_PROXY = os.getenv("HTTPS_PROXY")
+PROXY_USERNAME = os.getenv("PROXY_USERNAME")
+PROXY_PASSWORD = os.getenv("PROXY_PASSWORD")
+
+def get_proxies():
+    """获取代理设置"""
+    if not USE_PROXY:
+        return None
+        
+    proxies = {}
+    
+    # 处理HTTP代理
+    if HTTP_PROXY:
+        if PROXY_USERNAME and PROXY_PASSWORD:
+            # 如果提供了用户名和密码，构建带认证的代理URL
+            username = quote_plus(PROXY_USERNAME)
+            password = quote_plus(PROXY_PASSWORD)
+            proxy_url = HTTP_PROXY.replace("://", f"://{username}:{password}@")
+            proxies['http'] = proxy_url
+        else:
+            proxies['http'] = HTTP_PROXY
+            
+    # 处理HTTPS代理
+    if HTTPS_PROXY:
+        if PROXY_USERNAME and PROXY_PASSWORD:
+            # 如果提供了用户名和密码，构建带认证的代理URL
+            username = quote_plus(PROXY_USERNAME)
+            password = quote_plus(PROXY_PASSWORD)
+            proxy_url = HTTPS_PROXY.replace("://", f"://{username}:{password}@")
+            proxies['https'] = proxy_url
+        else:
+            proxies['https'] = HTTPS_PROXY
+        
+    if proxies:
+        # 在日志中隐藏密码
+        logged_proxies = {k: v.replace(PROXY_PASSWORD, '******') if PROXY_PASSWORD and v else v 
+                         for k, v in proxies.items()}
+        logger.info(f"使用代理: {logged_proxies}")
+    else:
+        logger.warning("USE_PROXY=True 但未配置代理地址")
+        
+    return proxies if proxies else None
 
 def get_klines_data(symbol, interval="5m", limit=50, is_futures=False):
     """获取K线数据"""
@@ -31,7 +77,20 @@ def get_klines_data(symbol, interval="5m", limit=50, is_futures=False):
             "limit": limit + 1  # 多获取一根，用于计算最后一根的变化
         }
 
-        response = requests.get(f"{base_url}{endpoint}", params=params)
+        # 添加代理支持
+        proxies = get_proxies()
+        
+        headers = {}
+        if BINANCE_API_KEY:
+            headers["X-MBX-APIKEY"] = BINANCE_API_KEY
+
+        response = requests.get(
+            f"{base_url}{endpoint}",
+            params=params,
+            proxies=proxies,
+            headers=headers,
+            timeout=10  # 添加超时设置
+        )
         response.raise_for_status()
 
         klines = response.json()
@@ -87,8 +146,11 @@ def get_klines_data(symbol, interval="5m", limit=50, is_futures=False):
 
         return processed_klines
 
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         logger.error(f"获取K线数据出错: {e}")
+        raise Exception(f"获取{symbol} {interval}K线数据失败: {str(e)}")
+    except Exception as e:
+        logger.error(f"处理K线数据出错: {e}")
         raise Exception(f"获取{symbol} {interval}K线数据失败: {str(e)}")
 
 
@@ -103,7 +165,19 @@ def get_orderbook_stats(symbol, is_futures=False, limit=1000):
             "limit": limit
         }
 
-        response = requests.get(f"{base_url}{endpoint}", params=params)
+        # 添加代理支持
+        proxies = get_proxies()
+        headers = {}
+        if BINANCE_API_KEY:
+            headers["X-MBX-APIKEY"] = BINANCE_API_KEY
+
+        response = requests.get(
+            f"{base_url}{endpoint}",
+            params=params,
+            proxies=proxies,
+            headers=headers,
+            timeout=10
+        )
         response.raise_for_status()
 
         orderbook = response.json()
