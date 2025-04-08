@@ -4,4 +4,9 @@ requests==2.31.0
 numpy==1.24.3
 pandas==2.0.2
 python-binance==1.0.19
-python-dotenv==1.0.0 
+python-dotenv==1.0.0
+gunicorn==21.2.0
+react-app-rewired==2.2.1
+react-dom==18.0.0
+react-scripts==5.0.1
+react-router-dom==6.0.0
