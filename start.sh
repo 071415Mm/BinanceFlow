@@ -7,4 +7,4 @@ pip install -r requirements.txt
 pip install gunicorn
 
 # 启动应用
-gunicorn -c gunicorn.conf.py "backend.api.api_server:create_app()" 
+gunicorn -c gunicorn.conf.py wsgi:app 

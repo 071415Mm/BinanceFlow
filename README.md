@@ -161,4 +161,85 @@ MIT
 4. 推送到分支 (git push origin feature/amazing-feature)
 5. 创建一个 Pull Request
 
+## 部署指南
+
+### 云服务器部署
+
+1. **选择云服务提供商**
+   - 可选择 AWS、Azure、Google Cloud、DigitalOcean 或阿里云等
+   - 创建虚拟机实例，推荐使用 Ubuntu 或 CentOS
+   - 根据需求配置 CPU、内存和存储
+
+2. **服务器初始化**
+   ```bash
+   # 更新系统
+   sudo apt update && sudo apt upgrade -y
+
+   # 安装必要软件
+   sudo apt install python3 python3-pip git nginx -y
+   ```
+
+3. **代码部署**
+   ```bash
+   # 克隆代码
+   git clone https://github.com/071415Mm/BinanceFlow.git
+   cd BinanceFlow
+
+   # 创建虚拟环境
+   python3 -m venv venv
+   source venv/bin/activate
+
+   # 安装依赖
+   pip install -r requirements.txt
+   ```
+
+4. **环境配置**
+   ```bash
+   # 创建并编辑 .env 文件
+   cp .env.example .env
+   nano .env
+
+   # 设置环境变量
+   export DEEPSEEK_API_KEY=您的密钥
+   export BINANCE_API_KEY=您的密钥
+   ```
+
+5. **启动应用**
+   ```bash
+   # 使用 gunicorn 启动
+   ./start.sh
+   ```
+
+6. **配置 Nginx**
+   ```nginx
+   server {
+       listen 80;
+       server_name your_domain.com;
+
+       location / {
+           proxy_pass http://127.0.0.1:10000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+       }
+   }
+   ```
+
+7. **防火墙设置**
+   ```bash
+   # 开放必要端口
+   sudo ufw allow 80
+   sudo ufw allow 443
+   ```
+
+### 使用 Render.com 部署
+
+1. 在 Render.com 创建新的 Web Service
+2. 连接 GitHub 仓库
+3. 选择分支
+4. 配置环境变量：
+   - `DEEPSEEK_API_KEY`
+   - `BINANCE_API_KEY`（可选）
+5. 设置启动命令：`./start.sh`
+6. 点击 Deploy 开始部署
+
 
