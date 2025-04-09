@@ -138,9 +138,30 @@ def send_to_deepseek(data, interval="1h"):
         logger.info("正在发送数据到DeepSeek API...")
         response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload)
         response.raise_for_status()
-        result = response.json()
+        
+        # 检查响应内容类型
+        content_type = response.headers.get('content-type', '')
+        if 'application/json' not in content_type:
+            logger.error(f"意外的响应类型: {content_type}")
+            logger.error(f"响应内容: {response.text[:500]}...")  # 只记录前500个字符
+            raise Exception("DeepSeek API返回了非JSON响应")
+            
+        try:
+            result = response.json()
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON解析错误: {e}")
+            logger.error(f"响应内容: {response.text[:500]}...")
+            raise Exception("无法解析DeepSeek API的响应")
+            
+        if 'choices' not in result or not result['choices']:
+            logger.error(f"API响应格式错误: {result}")
+            raise Exception("DeepSeek API响应格式不正确")
+            
         logger.info("成功获取DeepSeek API响应")
         return result['choices'][0]['message']['content']
+    except requests.exceptions.RequestException as e:
+        logger.error(f"DeepSeek API请求错误: {e}")
+        raise Exception(f"AI分析失败: 网络请求错误 - {str(e)}")
     except Exception as e:
         logger.error(f"DeepSeek API error: {e}")
         raise Exception(f"AI分析失败: {str(e)}") 
