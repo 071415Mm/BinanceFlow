@@ -11,6 +11,7 @@ class ControlPanel {
         this.onAnalysisStart = null;
         this.symbolInput = '';
         this.onAddSymbol = null;
+        this.isAnalyzing = false;
         this.render();
     }
 
@@ -31,6 +32,15 @@ class ControlPanel {
      */
     getSelectedInterval() {
         return this.selectedInterval;
+    }
+
+    /**
+     * 设置分析状态
+     * @param {boolean} analyzing - 是否正在分析
+     */
+    setAnalyzing(analyzing) {
+        this.isAnalyzing = analyzing;
+        this.render();
     }
 
     /**
@@ -66,11 +76,12 @@ class ControlPanel {
         symbolInput.className = 'form-control';
         symbolInput.placeholder = '例如: BTCUSDT';
         symbolInput.value = this.symbolInput;
+        symbolInput.disabled = this.isAnalyzing;
         symbolInput.oninput = (e) => {
             this.symbolInput = e.target.value;
         };
         symbolInput.onkeypress = (e) => {
-            if (e.key === 'Enter' && this.onAddSymbol) {
+            if (e.key === 'Enter' && this.onAddSymbol && !this.isAnalyzing) {
                 this.onAddSymbol(this.symbolInput);
                 this.symbolInput = '';
                 symbolInput.value = '';
@@ -81,8 +92,9 @@ class ControlPanel {
         const addButton = document.createElement('button');
         addButton.className = 'btn btn-primary';
         addButton.textContent = '添加';
+        addButton.disabled = this.isAnalyzing;
         addButton.onclick = () => {
-            if (this.onAddSymbol) {
+            if (this.onAddSymbol && !this.isAnalyzing) {
                 this.onAddSymbol(this.symbolInput);
                 this.symbolInput = '';
                 symbolInput.value = '';
@@ -104,6 +116,7 @@ class ControlPanel {
 
         const intervalSelect = document.createElement('select');
         intervalSelect.className = 'form-select';
+        intervalSelect.disabled = this.isAnalyzing;
         
         this.intervals.forEach(interval => {
             const option = document.createElement('option');
@@ -122,10 +135,13 @@ class ControlPanel {
 
         // 创建分析按钮
         const analyzeButton = document.createElement('button');
-        analyzeButton.className = 'btn btn-primary w-100';
-        analyzeButton.textContent = '开始分析';
+        analyzeButton.className = `btn w-100 ${this.isAnalyzing ? 'btn-danger' : 'btn-primary'}`;
+        analyzeButton.textContent = this.isAnalyzing ? '正在分析...' : '开始分析';
+        analyzeButton.disabled = this.isAnalyzing;
         analyzeButton.onclick = () => {
-            if (this.onAnalysisStart) {
+            if (this.onAnalysisStart && !this.isAnalyzing) {
+                this.isAnalyzing = true;
+                this.render();
                 this.onAnalysisStart(this.selectedInterval);
             }
         };

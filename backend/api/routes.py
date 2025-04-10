@@ -18,6 +18,9 @@ api_bp = Blueprint('api', __name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# 在routes.py中添加全局变量来跟踪分析状态
+_analysis_in_progress = False
+
 
 @api_bp.route('/symbols', methods=['GET'])
 def get_default_symbols():
@@ -40,23 +43,33 @@ def get_intervals():
 @api_bp.route('/analyze', methods=['POST'])
 def analyze_symbols():
     """分析交易对的资金流向"""
-    data = request.json
-    if not data:
+    global _analysis_in_progress
+    
+    # 检查是否有正在进行的分析
+    if _analysis_in_progress:
         return jsonify({
             "status": "error",
-            "message": "请求数据为空"
-        }), 400
-
-    symbols = data.get('symbols', [])
-    interval = data.get('interval', '1h')
-
-    if not symbols:
-        return jsonify({
-            "status": "error",
-            "message": "未提供交易对"
-        }), 400
-
+            "message": "已有分析正在进行中，请等待完成后再试"
+        }), 429  # 使用429状态码表示请求过多
+    
     try:
+        _analysis_in_progress = True
+        data = request.json
+        if not data:
+            return jsonify({
+                "status": "error",
+                "message": "请求数据为空"
+            }), 400
+
+        symbols = data.get('symbols', [])
+        interval = data.get('interval', '1h')
+
+        if not symbols:
+            return jsonify({
+                "status": "error",
+                "message": "未提供交易对"
+            }), 400
+
         # 记录开始时间
         start_time = datetime.now()
         logger.info(f"开始分析 {', '.join(symbols)}, 时间间隔: {interval}")
@@ -209,6 +222,8 @@ def analyze_symbols():
             "status": "error",
             "message": f"分析过程中发生错误: {str(e)}"
         }), 500
+    finally:
+        _analysis_in_progress = False
 
 
 @api_bp.route('/health', methods=['GET'])

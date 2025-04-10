@@ -132,6 +132,7 @@ class Dashboard {
         // 检查是否有交易对
         if (symbols.length === 0) {
             this.analysisResults.setError('请至少添加一个交易对');
+            this.controlPanel.setAnalyzing(false);
             return;
         }
         
@@ -150,6 +151,9 @@ class Dashboard {
             }
         } catch (error) {
             this.analysisResults.setError(error.message || '分析过程中发生错误');
+        } finally {
+            // 无论成功还是失败，都重置分析状态
+            this.controlPanel.setAnalyzing(false);
         }
     }
 }
